@@ -16,6 +16,8 @@
     "@mantine/form": "^8.1.0",
     "@mantine/hooks": "^8.1.0",
     "@mantine/modals": "^8.1.0",
+    "@mantine/styles": "^6.0.22",
+    "@tabler/icons-react": "^3.34.0",
     "apollo-upload-client": "^18.0.1",
     "graphql": "^16.11.0",
     "react": "^19.1.0",

@@ -1,14 +1,15 @@
-import ProtectedRoute from "../components/ProtectedRoute";
+// import ProtectedRoute from "../components/ProtectedRoute";
+import { Group } from "@mantine/core";
 import Sidebar from "../components/Sidebar";
 import MainLayout from "../layout/MainLayout";
 
 const Home = () => {
   return (
     <MainLayout>
-      <ProtectedRoute>
+      <Group style={{ display: "flex", flexDirection: "row" }}>
         <Sidebar />
-        <div>Home page</div>
-      </ProtectedRoute>
+        <div>Main Content</div>
+      </Group>
     </MainLayout>
   );
 };
