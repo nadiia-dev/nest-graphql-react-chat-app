@@ -1,7 +1,11 @@
 import { Flex } from "@mantine/core";
 
 const MainLayout = ({ children }: { children: React.ReactElement }) => {
-  return <Flex style={{ height: "100vh" }}>{children}</Flex>;
+  return (
+    <Flex>
+      <Flex>{children}</Flex>
+    </Flex>
+  );
 };
 
 export default MainLayout;

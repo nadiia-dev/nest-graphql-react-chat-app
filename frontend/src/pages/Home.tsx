@@ -1,15 +1,18 @@
-// import ProtectedRoute from "../components/ProtectedRoute";
-import { Group } from "@mantine/core";
+import AuthOverlay from "../components/AuthOverlay";
+import ProtectedRoute from "../components/ProtectedRoute";
 import Sidebar from "../components/Sidebar";
 import MainLayout from "../layout/MainLayout";
 
 const Home = () => {
   return (
     <MainLayout>
-      <Group style={{ display: "flex", flexDirection: "row" }}>
+      <div style={{ position: "absolute" }}>
+        <AuthOverlay />
         <Sidebar />
-        <div>Main Content</div>
-      </Group>
+        <ProtectedRoute>
+          <div>Main Content</div>
+        </ProtectedRoute>
+      </div>
     </MainLayout>
   );
 };

@@ -1,147 +1,101 @@
-import { Stack, Center, Tooltip, UnstyledButton, rem } from "@mantine/core";
-import {
-  IconBrandMessenger,
-  IconBrandWechat,
-  IconUser,
-  IconLogout,
-  IconLogin,
-} from "@tabler/icons-react";
 import { useState } from "react";
-import { createStyles } from "@mantine/styles";
 import { useGlobalStore } from "../store/globalStore";
 import { useUsersStore } from "../store/usersStore";
+import {
+  Navbar,
+  Center,
+  Tooltip,
+  UnstyledButton,
+  createStyles,
+  Stack,
+  rem,
+} from "@mantine/core";
+
+import {
+  IconUser,
+  IconLogout,
+  IconBrandMessenger,
+  IconBrandWechat,
+  IconLogin,
+} from "@tabler/icons-react";
 import { useMutation } from "@apollo/client";
 import { LOGOUT_USER } from "../graphql/mutations/Logout";
 
-const useStyles = createStyles((theme) => ({
-  sidebar: {
-    width: 100,
-    minHeight: "100vh",
-    maxHeight: "100vh",
-    borderRight: `1px solid ${
-      theme.colorScheme === "dark" ? theme.colors.dark[4] : theme.colors.gray[3]
-    }`,
-    padding: theme.spacing.md,
-    backgroundColor:
-      theme.colorScheme === "dark" ? theme.colors.dark[7] : theme.white,
-    display: "flex",
-    flexDirection: "column",
-    justifyContent: "space-between",
-    overflow: "hidden",
-    boxSizing: "border-box",
-  },
-
-  navButton: {
-    width: rem(50),
-    height: rem(50),
-    borderRadius: theme.radius.md,
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-    color:
-      theme.colorScheme === "dark"
-        ? theme.colors.dark[0]
-        : theme.colors.gray[7],
-    cursor: "pointer",
-    userSelect: "none",
-    transition: "all 0.2s ease",
-    border: "1px solid transparent",
-
-    "&:hover": {
-      backgroundColor:
+const useStyles = createStyles((theme) => {
+  return {
+    link: {
+      width: rem(50),
+      height: rem(50),
+      borderRadius: theme.radius.md,
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "center",
+      color:
         theme.colorScheme === "dark"
-          ? theme.colors.dark[5]
-          : theme.colors.gray[0],
-      borderColor:
-        theme.colorScheme === "dark"
-          ? theme.colors.dark[3]
-          : theme.colors.gray[2],
-      transform: "translateY(-1px)",
-    },
-  },
+          ? theme.colors.dark[0]
+          : theme.colors.gray[7],
 
-  active: {
-    backgroundColor: theme.fn.variant({
-      variant: "light",
-      color: theme.primaryColor,
-    }).background,
-    color: theme.fn.variant({
-      variant: "light",
-      color: theme.primaryColor,
-    }).color,
-    borderColor: theme.fn.variant({
-      variant: "light",
-      color: theme.primaryColor,
-    }).color,
-
-    "&:hover": {
-      backgroundColor: theme.fn.variant({
-        variant: "light",
-        color: theme.primaryColor,
-      }).background,
-      transform: "none",
+      "&:hover": {
+        backgroundColor:
+          theme.colorScheme === "dark"
+            ? theme.colors.dark[5]
+            : theme.colors.gray[0],
+      },
     },
-  },
-
-  logoutButton: {
-    "&:hover": {
-      backgroundColor: theme.colors.red[0],
-      color: theme.colors.red[7],
-      borderColor: theme.colors.red[2],
+    active: {
+      "&, &:hover": {
+        backgroundColor: theme.fn.variant({
+          variant: "light",
+          color: theme.primaryColor,
+        }).background,
+        color: theme.fn.variant({ variant: "light", color: theme.primaryColor })
+          .color,
+      },
     },
-  },
-
-  loginButton: {
-    "&:hover": {
-      backgroundColor: theme.colors.green[0],
-      color: theme.colors.green[7],
-      borderColor: theme.colors.green[2],
-    },
-  },
-}));
+  };
+});
 
 interface NavbarLinkProps {
   icon: React.FC<any>;
   label: string;
   active?: boolean;
   onClick?(): void;
-  className?: string;
 }
 
-function NavbarLink({
-  icon: Icon,
-  label,
-  active,
-  onClick,
-  className,
-}: NavbarLinkProps) {
+function NavbarLink({ icon: Icon, label, active, onClick }: NavbarLinkProps) {
   const { classes, cx } = useStyles();
-
   return (
-    <Tooltip label={label} position="right" withArrow>
+    <Tooltip
+      label={label}
+      position="top-start"
+      offset={-30}
+      transitionProps={{ duration: 0 }}
+    >
       <UnstyledButton
         onClick={onClick}
-        className={cx(
-          classes.navButton,
-          { [classes.active]: active },
-          className
-        )}
+        className={cx(classes.link, { [classes.active]: active })}
       >
-        <Icon size="1.5rem" />
+        <Icon size="1.2rem" stroke={1.5} />
       </UnstyledButton>
     </Tooltip>
   );
 }
-
 const mockdata = [{ icon: IconBrandWechat, label: "Chatrooms" }];
 
-const Sidebar = () => {
+function Sidebar() {
   const toggleProfileSettingsModal = useGlobalStore(
     (state) => state.toggleProfileSettingsModal
   );
   const [active, setActive] = useState(0);
-  const { classes } = useStyles();
 
+  const links = mockdata.map((link, index) => (
+    <NavbarLink
+      {...link}
+      key={link.label}
+      active={index === active}
+      onClick={() => setActive(index)}
+    />
+  ));
   const userId = useUsersStore((state) => state.id);
   const user = useUsersStore((state) => state);
   const setUser = useUsersStore((state) => state.setUser);
@@ -153,15 +107,6 @@ const Sidebar = () => {
     },
   });
 
-  const links = mockdata.map((link, index) => (
-    <NavbarLink
-      {...link}
-      key={link.label}
-      active={index === active}
-      onClick={() => setActive(index)}
-    />
-  ));
-
   const handleLogout = async () => {
     await logoutUser();
     setUser({
@@ -170,46 +115,45 @@ const Sidebar = () => {
       avatarUrl: null,
       email: "",
     });
-    console.log("Logout");
   };
 
   return (
-    <div className={classes.sidebar}>
-      <div>
-        <Center mb="xl">
-          <IconBrandMessenger size={30} />
-        </Center>
-        <Stack gap={10} align="center">
+    <Navbar fixed zIndex={100} w={rem(100)} p="md">
+      <Center>
+        <IconBrandMessenger type="mark" size={30} />
+      </Center>
+      <Navbar.Section grow mt={50}>
+        <Stack justify="center" spacing={0}>
           {userId && links}
         </Stack>
-      </div>
+      </Navbar.Section>
+      <Navbar.Section>
+        <Stack justify="center" spacing={0}>
+          {userId && (
+            <NavbarLink
+              icon={IconUser}
+              label={"Profile(" + user.fullname + ")"}
+              onClick={toggleProfileSettingsModal}
+            />
+          )}
 
-      <Stack align="center" gap={0}>
-        {userId && (
-          <NavbarLink
-            icon={IconUser}
-            label={`Profile (${user.fullname})`}
-            onClick={toggleProfileSettingsModal}
-          />
-        )}
-        {userId ? (
-          <NavbarLink
-            icon={IconLogout}
-            label="Logout"
-            onClick={handleLogout}
-            className={classes.logoutButton}
-          />
-        ) : (
-          <NavbarLink
-            icon={IconLogin}
-            label="Login"
-            onClick={toggleLoginModal}
-            className={classes.loginButton}
-          />
-        )}
-      </Stack>
-    </div>
+          {userId ? (
+            <NavbarLink
+              icon={IconLogout}
+              label="Logout"
+              onClick={handleLogout}
+            />
+          ) : (
+            <NavbarLink
+              icon={IconLogin}
+              label="Login"
+              onClick={toggleLoginModal}
+            />
+          )}
+        </Stack>
+      </Navbar.Section>
+    </Navbar>
   );
-};
+}
 
 export default Sidebar;
