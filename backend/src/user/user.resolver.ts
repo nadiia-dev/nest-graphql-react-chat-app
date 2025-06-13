@@ -1,4 +1,4 @@
-import { Args, Context, Mutation, Resolver } from '@nestjs/graphql';
+import { Args, Context, Mutation, Query, Resolver } from '@nestjs/graphql';
 import { UserService } from './user.service';
 import { UseGuards } from '@nestjs/common';
 import { GraphqlAuthGuard } from 'src/auth/graphql-auth.guard';
@@ -25,6 +25,21 @@ export class UserResolver {
     const imageUrl = file ? await this.storeImageAndGetUrl(file) : undefined;
     const userId = context.req.user?.sub;
     return this.userService.updateUserProfile(userId!, fullname, imageUrl);
+  }
+
+  @UseGuards(GraphqlAuthGuard)
+  @Query(() => [User])
+  async searchUsers(
+    @Args('fullname') fullname: string,
+    @Context() context: { req: Request },
+  ) {
+    return this.userService.searchUsers(fullname, context.req.user!.sub);
+  }
+
+  @UseGuards(GraphqlAuthGuard)
+  @Query(() => [User])
+  getUsersOfChatroom(@Args('chatroomId') chatroomId: number) {
+    return this.userService.getUsersOfChatroom(chatroomId);
   }
 
   private async storeImageAndGetUrl(file: GraphQLUpload) {

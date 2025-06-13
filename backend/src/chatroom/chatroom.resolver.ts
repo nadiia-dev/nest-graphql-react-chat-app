@@ -8,9 +8,11 @@ import { UseFilters, UseGuards } from '@nestjs/common';
 import { GraphQLErrorFilter } from 'src/filters/custom-exception.filter';
 import { GraphqlAuthGuard } from 'src/auth/graphql-auth.guard';
 import { Chatroom, Message } from './chatroom.types';
+import { Request } from 'express';
 
 @Resolver()
 export class ChatroomResolver {
+  public pubSub: PubSub;
   constructor(
     private readonly chatroomService: ChatroomService,
     private readonly userService: UserService,
@@ -25,7 +27,7 @@ export class ChatroomResolver {
     @Args('name') name: string,
     @Context() context: { req: Request },
   ) {
-    return this.chatroomService.createChatroom(name, context.req.user.sub);
+    return this.chatroomService.createChatroom(name, context.req.user!.sub);
   }
 
   @Mutation(() => Chatroom)

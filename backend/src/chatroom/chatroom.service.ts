@@ -1,6 +1,7 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { PrismaService } from 'src/prisma.service';
+import * as fs from 'fs';
 
 @Injectable()
 export class ChatroomService {
@@ -127,7 +128,7 @@ export class ChatroomService {
     const imagePath = `${this.configService.get('IMAGE_PATH')}/${imageName}`;
     const stream = image.createReadStream();
     const outputPath = `public${imagePath}`;
-    const writeStream = createWriteStream(outputPath);
+    const writeStream = fs.createWriteStream(outputPath);
     stream.pipe(writeStream);
 
     await new Promise((resolve, reject) => {
